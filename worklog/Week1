@@ -1,0 +1,132 @@
+---------------------------------------------------
+Overview
+---------------------------------------------------
+
+This first week is all about getting you setup and 
+situated with bare-metal and cross-ISA development.
+
+We provided you with a small project that compiles and runs. 
+We are asking you to dig into in order to understand its parts 
+and how they fit together:
+
+	- software development tools
+	- software structure
+	- makefile and linker script
+	- running on QEMU
+	- debugging software running on QEMU
+
+This requires a fair amount of work actually, do not speed through it, 
+just thinking you somewhat understood, where in fact, you missed most
+of the important points. Formulate questions if you need to.
+
+You must go through the decks of slides and make sure you understand 
+what is presented there. Formulate questions if you need to.
+
+---------------------------------------------------
+Git-tag: week1.step1
+---------------------------------------------------
+
+Walk around the code and the makefile.
+
+Make sure you can compile and run for both boards: VAP and VPB.
+Same processor? Same amount of memory?
+
+Understand the linker script and the memory map relationship.
+Use the QEMU console and the command:
+ 
+  (qemu) info mtree
+  
+Understand what is that bss section and why it needs to be reset to 0.
+Make sure to have a few global variables in C, some initialized to zero
+and some initialized to something else. Confirm you understand the relationship
+between these global variables and the different data sections.
+
+Experiment with "arm-none-eabi-objdump" to look at what the compiler does,
+both on object files and on the file ELF executable.
+
+Why is the bss section aligned on a 16-byte boundary? Confirm you see 
+why in the code in the file "reset.s".
+
+---------------------------------------------------
+Git-tag: week1.step2
+---------------------------------------------------
+  
+Understand the boot sequence, following the execution step
+by step under gdb. The use of gdb is MANDATORY!
+
+This includes "vector.s" and "reset.s" and "main.c"
+
+Verify that what you see corresponds to your understanding 
+of the linker script and the memory map.
+
+Remove the periodic "Zzzz..." output. Why was it there? 
+What does that tell you about the execution?
+
+Why is the symbol _stack_top defined attend why is it at the end of
+everything?
+
+How can you verify in C that the stack is working properly?
+
+What would happen if we were to call to many functions in C?
+How could you verify that your C program executes safely?
+
+Had support for kprintf, see the file "kprintf.c".
+
+---------------------------------------------------
+Git-tag: week1.step2
+---------------------------------------------------
+
+Make sure you understand the UART BAR, register offsets, and
+bit fields. Make sure you find that information in the proper
+documentation. Verify using the QEMU console and the command:
+ 
+  (qemu) info qtree
+
+Ask QEMU to emulate a second serial line, via a telnet connection.
+See the makefile and the file "worklog/README-QEMU" for how to do this.
+
+Direct kprintf to output via that second serial line, allowing you
+to use kprintf to log stuff without compromising the "console".
+
+Use that to print the byte values representing the encoding
+of the typed characters on the keyboard. Watch what happens
+when hitting regular letters, like 'a' 'b' 'A' and 'B'.
+And then watch what happens when hitting special keys:
+	
+	- left,right,up, and down arrows
+	- backspace
+	- delete
+
+Notice what happens on the screen with the arrows... not 
+your usual behavior, is it? Explain what is going on.	
+
+Notice that the cursor does not leave the window...
+that will be usefull to implement the clearing of the
+terminal window.
+
+---------------------------------------------------
+Git-tag: week1.step3
+---------------------------------------------------
+
+You will code the beginning of a console shell, on the 
+serial line UART0. Upon startup, clear the screen, with
+the cursor at the top-left corner.
+
+The console introduces a command line behavior, like a 
+regular shell. That is, the ability to edit a line before 
+hitting "return", using the left and right arrow, 
+and the backspace or delete keys.
+
+Once you have the ability to read an entire edited line,
+when "return" is hit, you can introduce the parsing of that
+line. First commands to parse:
+
+  - the command "reset" that clears the entire screen,
+    leaving the cursor at the top-left corner.
+  - the command "echo" that echoes the rest of the line.     
+
+You will keep a history of the last 20 lines entered,
+using up and down arrows to scroll through the history,
+on the current line, like a regular shell would do.
+
+	
