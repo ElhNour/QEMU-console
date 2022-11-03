@@ -5,7 +5,7 @@
  * in assembly language, see the reset.s file.
  */
 
-void _start() {
+void _start() {// including both interrupts and traps.
   int i = 0;
   int count = 0;
   uart_send_string(UART0, "\nQuit with \"C-a c\" and then type in \"quit\".\n");

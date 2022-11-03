@@ -1,4 +1,56 @@
 ---------------------------------------------------
 Git-tag: week1.step1
 ---------------------------------------------------
-First thing I did is to read the README file. I created a local git repo in /workspace and did the first commit.
+First thing I did is to read the README file. I created a local git repo in /workspace, did the first commit (and forgot to create a new branch).
+
+After that I read the README-QEMU-ARM file, and tried to install qemu-system-arm but faced a lot of troubles. Fortunately, after a half hour of googling, I could solve the issue and run the qemu-system-arm -machine help command correctly.
+
+I first tried to combine the options for emulating a VM with qemu-system-arm but the kernel.elf file wasn't avaible before. Thus, I read the Makefile and understood that it is the file that should be run in order to emulate the VM. I run it with the cmd: "make -f Makefile". The object files as well as the ELF file were generated, then I run the command (run:all) specified in the Makefile to launch the VM. Once run, it started to print in the console : "Hello World!" then "ZzzZzzz" infinitely.
+
+What I understood from the board*.h is that they are intended for the emulation of the Versatile boards by declaring UART memory adresses, including some libraries "uart.h",..etc.
+
+kernel.ld is the source code for generating the executable file kernel.elf. 
+
+kprintf.c contains some functions that are used by QEMU to control the VM I guess.
+
+vector.s loads the page-0 vector for processor  execptions. It is the BOOT ENTRY POINT.
+
+reset.s for manipulating the bss section of the ELF file.
+
+main.c the code that runs once the hardware has been setup properly.
+
+Now, regarding the question:
+- Make sure you can compile and run for both boards: VAP and VPB.
+Same processor? Same amount of memory?
+
+Answer: I had to remove the object + ELF files generated for VPB so that VAP compiles and runs. No, they don't use same processor and amount of memory, but I tried to set the same processor and amount of memory of the versatileab for the versatilepb and it worked but much slower.
+
+
+- Understand the linker script and the memory map relationship.
+Use the QEMU console and the command:
+ 
+  (qemu) info mtree
+
+Answer: The linker script defines the entry point of ELF code, which is the exception vector at 0x00 that will branch to 0x1000 where the code for reset will be loaded, followed by the rest of the code. Then the initialized data sections, as well as the zeroed bssh section are included. Finally, reserve some memory for the C stack.  The memory map relationship is to provide the process running on a VM with virtual addresses that it may need, but in fact they will be mapped to a real address by the MMU.
+
+- Understand what is that bss section and why it needs to be reset to 0.
+
+Answer: The bss section or "Block Started by Symbol" section specifies the section (or segment) where uninitialized variables are stored in the object (.o) file, and that's why it need to be reset to 0. 
+
+
+- Make sure to have a few global variables in C, some initialized to zero
+and some initialized to something else. Confirm you understand the relationship
+between these global variables and the different data sections.
+
+Answer: Yes there are global variables in C files initialized to zero, and some other values. The relationship is that initialized global and static variables will be stored in the .data section.
+
+
+- Experiment with "arm-none-eabi-objdump" to look at what the compiler does,
+both on object files and on the file ELF executable.
+
+Answer: Using the "arm-none-eabi-objdump -D file-name", I could  display assembler contents of all sections, which means that the compiler has translated programming language source code into an intermediate machine-readable form. Once this is done, the compiler and more specifically the linker, produces the executable codes.
+
+Why is the bss section aligned on a 16-byte boundary? Confirm you see 
+why in the code in the file "reset.s".
+
+Answer: The bss section is aligned on a 16-byte boundary because the memory address of the used data needs to be divisible by the number of bytes required by the instruction, which is a load instruction in an arm register having a size of  32 or 64 bits. So, the bss address needs to be a multiple of 4-bytes or 8-bytes. 
