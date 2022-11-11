@@ -5,6 +5,8 @@
  * in assembly language, see the reset.s file.
  */
 
+int global_1=1;
+int global_2=0;
 void _start() {// including both interrupts and traps.
   int i = 0;
   int count = 0;
