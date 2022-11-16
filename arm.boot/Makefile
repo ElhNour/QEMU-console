@@ -34,7 +34,7 @@ QEMU_LOADER=-device loader,file=kernel.elf
 #   attach via a shell, on a the matching port:
 #     $ telnet locahost 4321
 #-------------------------------------------------------------------
-QEMU_SERIAL=-serial mon:stdio -serial telnet:localhost:4321,server,nowait
+QEMU_SERIAL=-serial mon:stdio
 
 #-------------------------------------------------------------------
 # Prefix for the toolchain, like:
@@ -63,7 +63,7 @@ OBJS=vector.o reset.o uart.o main.o
 # Compilation rules
 #-------------------------------------------------------------------
 %.o: %.c
-	$(TOOLCHAIN)-gcc $(CFLAGS) -o $@ $<
+	$(TOOLCHAIN)-gcc  $(CFLAGS) -o $@ $<
 
 %.o: %.s
 	$(TOOLCHAIN)-as $(ASFLAGS) -o $@ $<
