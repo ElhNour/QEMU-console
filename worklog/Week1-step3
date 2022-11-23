@@ -1,0 +1,28 @@
+---------------------------------------------------
+Git-tag: week1.step3
+---------------------------------------------------
+
+You will code the beginning of a console shell, on the 
+serial line UART0. Upon startup, clear the screen, with
+the cursor at the top-left corner.
+
+Answer: In order to clear the screen, with the cursor at the top-left corner, I added the instruction "uart_send_string(UART0,"\033[2J\033[0;0H")" before the two first prints (Quit and Hello world), where "\033[2J" clears the whole screen, and "\033[0;0H" moves the cursor to the top-left corner.
+
+The console introduces a command line behavior, like a 
+regular shell. That is, the ability to edit a line before 
+hitting "return", using the left and right arrow, 
+and the backspace or delete keys.
+
+Once you have the ability to read an entire edited line,
+when "return" is hit, you can introduce the parsing of that
+line. First commands to parse:
+
+  - the command "reset" that clears the entire screen,
+    leaving the cursor at the top-left corner.
+  - the command "echo" that echoes the rest of the line.     
+
+You will keep a history of the last 20 lines entered,
+using up and down arrows to scroll through the history,
+on the current line, like a regular shell would do.
+
+	

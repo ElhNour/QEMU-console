@@ -1,0 +1,76 @@
+---------------------------------------------------
+Git-tag: week1.step2
+---------------------------------------------------
+  
+- Understand the boot sequence, following the execution step
+by step under gdb. The use of gdb is MANDATORY!
+
+This includes "vector.s" and "reset.s" and "main.c"
+
+Verify that what you see corresponds to your understanding 
+of the linker script and the memory map.
+
+Answer: I run the following commands:
+arm-none-eabi-gdb kernel.elf
+(gdb) breakpoint _reset
+(gdb) target remote :1234
+(gdb) stepi
+and it shows the sequence of the instructions execution, starting with vector.s, then reset.s and then main.c, and that corresponds exactly to what the linker script defines.
+
+- Remove the periodic "Zzzz..." output. Why was it there? 
+What does that tell you about the execution?
+
+Answer: the periodic "Zzzz..." shows that the program is running an infinite loop (spinning), waiting for the user's input. This means that the CPU isn't running something else except the while loop, and is just waiting for the user's input.
+
+- Why is the symbol _stack_top defined attend why is it at the end of everything?
+
+Answer: the stack_top corresponds to the address of the stack top region, which is located on the bottom of the loaded regions
+from the linker script.
+
+- How can you verify in C that the stack is working properly?
+Answer: 
+
+- What would happen if we were to call to many functions in C?
+How could you verify that your C program executes safely?
+
+Had support for kprintf, see the file "kprintf.c".
+
+---------------------------------------------------
+Git-tag: week1.step2
+---------------------------------------------------
+
+- Make sure you understand the UART BAR, register offsets, and
+bit fields. Make sure you find that information in the proper
+documentation. Verify using the QEMU console and the command:
+ 
+  (qemu) info qtree
+
+- Answer: The UART is attached to each device in the machine so that it controlls the communication with the OS. The command info qtree shows the tree of all emulated devices with all their specifications (mmio adress, name and type of the bus, bit fields, registers for communication such as: data register, flag register, control register, ...etc).
+
+- Ask QEMU to emulate a second serial line, via a telnet connection.
+See the makefile and the file "worklog/README-QEMU" for how to do this.
+
+Direct kprintf to output via that second serial line, allowing you
+to use kprintf to log stuff without compromising the "console".
+
+-Answer: I added -serial telnet:localhost:4321,server,nowait option to QEMU_SERIAL variable, then I changed the UART0 in uart_send (in main.c)  to UART1 so that it directs the kprintf to the added serial line. After that I started to listen to localhost:4321 (telnet localhost 4321), run 'make run' on another terminal, and wrote characters on it. The result was that these characters are printed on the localhost:4321.
+
+
+- Use that to print the byte values representing the encoding
+of the typed characters on the keyboard. Watch what happens
+when hitting regular letters, like 'a' 'b' 'A' and 'B'.
+And then watch what happens when hitting special keys:
+	
+	- left,right,up, and down arrows
+	- backspace
+	- delete
+
+Notice what happens on the screen with the arrows... not 
+your usual behavior, is it? Explain what is going on.	
+
+- Answer: Regular letters are printed normally. Hitting the 4 arrows makes the cursor moves in the corresponding direction (right, left, up, down), escape button deletes the character when the cursor is on that character (i.e replaces that char by an escape), and works normally when it's a blank character. However, delete and backspace don't do anything.
+
+Notice that the cursor does not leave the window...
+that will be usefull to implement the clearing of the
+terminal window.
+	
